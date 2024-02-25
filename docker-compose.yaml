@@ -185,3 +185,27 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
     links:
       - zookeeper-1
+
+  message-producer:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - kafka-0
+    volumes:
+      - ./produce.sh:/produce.sh
+    command: /bin/bash -c "/produce.sh"
+    environment:
+      - BROKER=kafka-0:29092
+      - TOPIC=topic-1
+
+  copycat-go:
+    image: queue-copycat-go
+    depends_on:
+      - kafka-0
+      - kafka-1
+    environment:
+      SOURCE_KAFKA_URL: "kafka-0:29092"
+      SOURCE_TOPIC: topic-1
+      GROUP_ID: group-1
+      DESTINATION_KAFKA_URL: "kafka-1:29072"
+      DESTINATION_TOPIC: topic-1
+    entrypoint: /app/queue-copycat
