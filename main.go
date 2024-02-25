@@ -22,7 +22,6 @@ func newKafkaReader(kafkaURL, topic, groupID string) *kafka.Reader {
 func newKafkaWriter(kafkaURL, topic string) *kafka.Writer {
 	return &kafka.Writer{
 		Addr:     kafka.TCP(kafkaURL),
-		Topic:    topic,
 		Balancer: &kafka.LeastBytes{},
 	}
 }
@@ -63,6 +62,20 @@ func main() {
 
 	sourceReader := newKafkaReader(sourceKafkaURL, sourceTopic, groupID)
 	defer sourceReader.Close()
+
+	// test connection to source kafka
+	_, err := kafka.DialLeader(ctx, "tcp", sourceKafkaURL, sourceTopic, 0)
+	if err != nil {
+		log.Fatalf("failed to connect to source kafka: %s", err)
+	}
+	log.Println("Connected to source kafka")
+
+	// test connection to destination kafka
+	_, err = kafka.DialLeader(ctx, "tcp", destinationKafkaURL, destinationTopic, 0)
+	if err != nil {
+		log.Fatalf("failed to connect to destination kafka: %s", err)
+	}
+	log.Println("Connected to destination kafka")
 
 	destinationWriter := newKafkaWriter(destinationKafkaURL, destinationTopic)
 	defer destinationWriter.Close()
