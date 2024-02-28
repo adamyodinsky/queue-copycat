@@ -54,7 +54,7 @@ func copyMessages(sourceReader *kafka.Reader, destinationWriter *kafka.Writer, c
 			"topic":     msg.Topic,
 			"partition": msg.Partition,
 			"offset":    msg.Offset,
-		}).Info("Message received")
+		}).Debug("Message received")
 
 		if err := destinationWriter.WriteMessages(ctx, msg); err != nil {
 			log.WithFields(log.Fields{
@@ -67,7 +67,7 @@ func copyMessages(sourceReader *kafka.Reader, destinationWriter *kafka.Writer, c
 		log.WithFields(log.Fields{
 			"topic": msg.Topic,
 			"value": string(msg.Value),
-		}).Info("Message copied to destination topic")
+		}).Debug("Message copied to destination topic")
 	} // for
 }
 

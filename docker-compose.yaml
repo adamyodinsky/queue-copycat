@@ -218,4 +218,5 @@ services:
       SOURCE_TOPICS: "topic-1"
       GROUP_ID: group-1
       DESTINATION_KAFKA_URL: "kafka-1:29072"
+      LOG_LEVEL: "debug"
     entrypoint: /app/queue-copycat
